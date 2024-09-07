@@ -445,6 +445,10 @@ pub trait Visit<'ast> {
 
     }
 
+    fn visit_match_block(&mut self, f: &'ast MatchStatement, span: &'ast Span) {
+
+    }
+
     fn visit_label(&mut self, label: &'ast Label, span: &'ast Span) {
         visit_label(self, label, span)
     }
@@ -651,6 +655,7 @@ pub fn visit_expression<'ast, V: Visit<'ast> + ?Sized>(
         Expression::Statement(ref s) => visitor.visit_statement(&s.node, &s.span),
         Expression::SumType(ref b) => visitor.visit_sum_type_builder(&b.node, &b.span),
         Expression::IfExpr(ref if_e) => visitor.visit_if_expr(&if_e.node, &if_e.span),
+        
     }
 }
 
@@ -1367,6 +1372,7 @@ pub fn visit_statement<'ast, V: Visit<'ast> + ?Sized>(
         Statement::IfLet(ref if_let) => visitor.visit_if_let(&if_let.node, &if_let.span),
         Statement::Defer(ref def) => visitor.visit_defer(&def.node, &def.span),
         Statement::ForEach(ref fe) => visitor.visit_for_each(&fe.node, &fe.span),
+        Statement::Match(ref mb) => visitor.visit_match_block(&mb.node, &mb.span),
         _ => {},
     }
 }

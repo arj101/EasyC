@@ -1097,7 +1097,7 @@ statement0 -> Statement =
 
 
 defer_statement -> DeferStatement =
-    "defer" _ "(" _ deferred:list0<box<node<statement0>>> _ ")" _ block:box<node<statement0>> {
+    K<"defer"> _ "(" _ deferred:list0<box<node<statement0>>> _ ")" _ block:box<node<statement0>> {
         DeferStatement {
             deferred: deferred,
             stmt: block,
@@ -1155,7 +1155,8 @@ expression_statement -> Statement =
 selection_statement -> Statement =
     s:node<if_statement> { Statement::If(s) } /
     s:box<node<if_let_statement>> { Statement::IfLet(s) } /
-    s:node<switch_statement> { Statement::Switch(s) }
+    s:node<switch_statement> { Statement::Switch(s) } /
+    s:box<node<match_statement>> { Statement::Match(s) }
 
 if_let_statement -> IfLetStatement =
     K<"if"> _ K<"let"> _ t:identifier _ "::" _ v:identifier _ "(" _ inner:identifier _ ")" _ "=" _ e:identifier _ a:statement {
@@ -1167,6 +1168,39 @@ if_let_statement -> IfLetStatement =
             then_statement: a,
             else_statement: None,
         })
+    }
+
+match_statement -> MatchStatement =
+    "match" _ "(" _ e:expression _ ")" _ "{" _ cases:list0<box<node<match_block>>> _ "}" {
+
+   MatchStatement {
+       cond:e,
+       cases,
+       default: None
+   }
+}
+
+match_block -> MatchBlock =
+    K<"case"> _ e:constant_expression  _ "{" _ s:list0<statement> _ "}" {
+        MatchBlock {
+            cexpr: e,
+            stmts: s,
+            fall_through: true,
+        }
+    } /
+    K<"case"> _ e:constant_expression _ "=>" _ s:list0<statement> {
+        MatchBlock {
+           cexpr: e,
+           stmts: s,
+           fall_through: false,
+        }
+
+    }
+
+default_block -> MatchDefaultBlock =
+    K<"default"> _ ":" _ s:statement {
+        MatchDefaultBlock { stmt:s }
+
     }
 
 

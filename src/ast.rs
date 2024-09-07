@@ -1060,6 +1060,26 @@ pub struct DeferStatement {
 
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub struct MatchStatement {
+    pub cond: Box<Node<Expression>>,
+    pub cases: Vec<Box<Node<MatchBlock>>>,
+    pub default: Option<Box<Node<MatchDefaultBlock>>>,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct MatchBlock {
+    pub cexpr: Box<Node<Expression>>,
+    pub stmts: Vec<Box<Node<Statement>>>,
+    pub fall_through: bool,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct MatchDefaultBlock {
+    pub stmt: Box<Node<Statement>>,
+}
+
+
 // From 6.8 Statement
 
 /// Element of a function body
@@ -1085,6 +1105,7 @@ pub enum Statement {
     Return(Option<Box<Node<Expression>>>),
     /// Vendor specific inline assembly extensions
     Asm(Node<AsmStatement>),
+    Match(Box<Node<MatchStatement>>),
 }
 
 /// Labeled statement

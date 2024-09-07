@@ -1,4 +1,4 @@
-use std::{any::Any, collections::HashMap, fmt::format, hash::Hash};
+use std::{any::Any, collections::HashMap, fmt::format, hash::Hash, };
 
 use ast::*;
 use span::Node;
@@ -496,6 +496,32 @@ impl Visit<'_> for Visiter {
         self.str_replace(span.start, span.end, &replace);
     }
 
+    fn visit_match_block(&mut self, f: &'_ MatchStatement, span: &'_ Span) {
+        let mut replace = format!("switch ({}) {{", self.substr(f.cond.span.start, f.cond.span.end));
+        
+        for case in &f.cases {
+            replace += &format!("case {}: ",self.substr(case.node.cexpr.span.start, case.node.cexpr.span.end)); 
+            if case.node.fall_through {
+                replace += "{";
+                for s in &case.node.stmts {
+                    replace += self.substr(s.span.start, s.span.end);
+                }
+                replace += "break;}";
+            } else {
+                for s in &case.node.stmts {
+                    replace += self.substr(s.span.start, s.span.end);
+                }
+            }
+        }
+
+        if let Some(default) = &f.default {
+            replace += &format!("default: {}", self.substr(default.span.start, default.span.end));
+        }
+
+        replace += "}";
+        self.str_replace(span.start, span.end, &replace);
+    }
+
     fn visit_sum_type_builder(&mut self, a: &'_ SumTypeBuilder, s: &'_ Span) {
         if self.enums.contains_key(&a.sum_type.node.name) {
             let start = a.sum_type.span.start;
@@ -550,13 +576,15 @@ pub fn walk_ast(node: TranslationUnit, s: &str) {
     //
     // }
     //
-    let source = std::fs::read_to_string(s).unwrap();
+    let source = std::fs::read_to_string(s).unwrap().lines().collect::<String>();
     let mut visiter = Visiter {
         offset: 0,
         enums: HashMap::new(),
         source: IndexMappedString::new(source.clone()),
         source_immut: source,
     };
+
+
     visit_translation_unit(&mut visiter, &node);
 
     println!("{}", visiter.source.string);

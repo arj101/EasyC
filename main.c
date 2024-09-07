@@ -9,7 +9,7 @@ enum Result {
 
 
 enum ABC {
-FS,
+    FS,
     AB
 };
 
@@ -46,13 +46,12 @@ int main() {
   }
   int a = 424;
   a *= 25;
-
   int a = 424;
   a *= 25;
-
-    defer () {
+  match (a) { case 1{ x; } case 2 { y;} case 5 => y; x; case 6 => 3535;}
+  defer () {
         printf("Hello world");
-    };
+  };
 
 
   return 0;
