@@ -399,6 +399,7 @@ impl Visit<'_> for Visiter {
         } = binary_operator_expression
         {
             if let Expression::Identifier(ident) = &lhs.node {
+                self.visit_expression(&rhs.node, &rhs.span);
                 if let Expression::IfExpr(b) = &rhs.node {
                     if let IfExpr {
                         cond,
@@ -540,10 +541,11 @@ impl Visit<'_> for Visiter {
                 .expect("Invalid enum variant");
 
             let mut built = format!(
-                "{{
+                "(struct {}){{
             .variant = {},
             .value = {{ .{} = {} }}
             }}",
+               a.sum_type.node.name,
                 variant.1,
                 a.variant.node.name,
                 self.substr(a.inner_val.span.start, a.inner_val.span.end)
