@@ -14558,7 +14558,22 @@ fn __parse_if_let_statement<'input>(__input: &'input str, __state: &mut ParseSta
                                                                                                                                                                     Matched(__pos, _) => {
                                                                                                                                                                         let __seq_res = __parse_statement(__input, __state, __pos, env);
                                                                                                                                                                         match __seq_res {
-                                                                                                                                                                            Matched(__pos, a) => Matched(__pos, { (IfLetStatement { sum_type: t, variant: v, inner_val_binding: inner, comparison: e, then_statement: a, else_statement: None }) }),
+                                                                                                                                                                            Matched(__pos, a) => {
+                                                                                                                                                                                let __seq_res = __parse__(__input, __state, __pos, env);
+                                                                                                                                                                                match __seq_res {
+                                                                                                                                                                                    Matched(__pos, _) => {
+                                                                                                                                                                                        let __seq_res = match __parse_iflet_else_statement(__input, __state, __pos, env) {
+                                                                                                                                                                                            Matched(__newpos, __value) => Matched(__newpos, Some(__value)),
+                                                                                                                                                                                            Failed => Matched(__pos, None),
+                                                                                                                                                                                        };
+                                                                                                                                                                                        match __seq_res {
+                                                                                                                                                                                            Matched(__pos, else_s) => Matched(__pos, { (IfLetStatement { sum_type: t, variant: v, inner_val_binding: inner, comparison: e, then_statement: a, else_statement: else_s }) }),
+                                                                                                                                                                                            Failed => Failed,
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                    Failed => Failed,
+                                                                                                                                                                                }
+                                                                                                                                                                            }
                                                                                                                                                                             Failed => Failed,
                                                                                                                                                                         }
                                                                                                                                                                     }
@@ -14613,6 +14628,62 @@ fn __parse_if_let_statement<'input>(__input: &'input str, __state: &mut ParseSta
                                     Failed => Failed,
                                 }
                             }
+                            Failed => Failed,
+                        }
+                    }
+                    Failed => Failed,
+                }
+            }
+            Failed => Failed,
+        }
+    }
+}
+
+fn __parse_iflet_else_statement<'input>(__input: &'input str, __state: &mut ParseState<'input>, __pos: usize, env: &mut Env) -> RuleResult<Box<Node<Statement>>> {
+    #![allow(non_snake_case, unused)]
+    {
+        let __seq_res = {
+            __state.suppress_fail += 1;
+            let res = {
+                let __seq_res = slice_eq(__input, __state, __pos, "else");
+                match __seq_res {
+                    Matched(__pos, e) => {
+                        let __seq_res = {
+                            __state.suppress_fail += 1;
+                            let __assert_res = if __input.len() > __pos {
+                                let (__ch, __next) = char_range_at(__input, __pos);
+                                match __ch {
+                                    '_' | 'a'...'z' | 'A'...'Z' | '0'...'9' => Matched(__next, ()),
+                                    _ => __state.mark_failure(__pos, "[_a-zA-Z0-9]"),
+                                }
+                            } else {
+                                __state.mark_failure(__pos, "[_a-zA-Z0-9]")
+                            };
+                            __state.suppress_fail -= 1;
+                            match __assert_res {
+                                Failed => Matched(__pos, ()),
+                                Matched(..) => Failed,
+                            }
+                        };
+                        match __seq_res {
+                            Matched(__pos, _) => Matched(__pos, { e }),
+                            Failed => Failed,
+                        }
+                    }
+                    Failed => Failed,
+                }
+            };
+            __state.suppress_fail -= 1;
+            res
+        };
+        match __seq_res {
+            Matched(__pos, _) => {
+                let __seq_res = __parse__(__input, __state, __pos, env);
+                match __seq_res {
+                    Matched(__pos, _) => {
+                        let __seq_res = __parse_statement(__input, __state, __pos, env);
+                        match __seq_res {
+                            Matched(__pos, s) => Matched(__pos, { s }),
                             Failed => Failed,
                         }
                     }

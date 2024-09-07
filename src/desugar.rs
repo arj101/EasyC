@@ -303,8 +303,9 @@ impl Visit<'_> for Visiter {
     fn visit_defer(&mut self, f: &'_ DeferStatement, span: &'_ Span) {
         let mut replace = format!("{{\n");
 
+        self.visit_statement(&f.stmt.node, &f.stmt.span);
         replace += self.substr(f.stmt.span.start, f.stmt.span.end);
-        
+
         replace += "\n//deferred statements\n";
         for s in &f.deferred {
             replace += self.substr(s.span.start, s.span.end);
@@ -326,11 +327,11 @@ impl Visit<'_> for Visiter {
         let mut replace = format!(
             "for ({} {}={};{} < {}; {}++) ",
             t_str,
-            v.clone(),
+            v,
             self.substr(f.r.node.start.span.start, f.r.node.start.span.end),
-            v.clone(),
+            v,
             self.substr(f.r.node.stop.span.start, f.r.node.stop.span.end),
-            v.clone()
+            v
         );
 
         // self.visit_statement(&f.s.node, &f.r.span);
@@ -367,6 +368,13 @@ impl Visit<'_> for Visiter {
             replace += self.substr(f.then_statement.span.start, f.then_statement.span.end);
 
             replace += "}";
+
+            if let Some(else_stmt) = &f.else_statement {
+                self.visit_statement(&else_stmt.node, &else_stmt.span);
+                replace += "else {";
+                replace += self.substr(else_stmt.span.start, else_stmt.span.end);
+                replace += "}";
+            }
 
             self.str_replace(span.start, span.end, &replace);
 
@@ -498,9 +506,9 @@ impl Visit<'_> for Visiter {
 
     fn visit_match_block(&mut self, f: &'_ MatchStatement, span: &'_ Span) {
         let mut replace = format!("switch ({}) {{", self.substr(f.cond.span.start, f.cond.span.end));
-        
+
         for case in &f.cases {
-            replace += &format!("case {}: ",self.substr(case.node.cexpr.span.start, case.node.cexpr.span.end)); 
+            replace += &format!("case {}: ",self.substr(case.node.cexpr.span.start, case.node.cexpr.span.end));
             if case.node.fall_through {
                 replace += "{";
                 for s in &case.node.stmts {
@@ -576,7 +584,8 @@ pub fn walk_ast(node: TranslationUnit, s: &str) {
     //
     // }
     //
-    let source = std::fs::read_to_string(s).unwrap().lines().collect::<String>();
+    let source = std::fs::read_to_string(s).unwrap();
+
     let mut visiter = Visiter {
         offset: 0,
         enums: HashMap::new(),

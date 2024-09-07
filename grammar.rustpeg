@@ -760,7 +760,7 @@ enumerator -> Enumerator =
         }
     }
 
-inner_type -> InnerType = 
+inner_type -> InnerType =
     "(" _ t:node<type_name0> _ ")" {
         InnerType {
         val: t
@@ -1159,16 +1159,19 @@ selection_statement -> Statement =
     s:box<node<match_statement>> { Statement::Match(s) }
 
 if_let_statement -> IfLetStatement =
-    K<"if"> _ K<"let"> _ t:identifier _ "::" _ v:identifier _ "(" _ inner:identifier _ ")" _ "=" _ e:identifier _ a:statement {
+    K<"if"> _ K<"let"> _ t:identifier _ "::" _ v:identifier _ "(" _ inner:identifier _ ")" _ "=" _ e:identifier _ a:statement _ else_s:iflet_else_statement?{
         (IfLetStatement {
             sum_type: t,
             variant: v,
             inner_val_binding: inner,
             comparison: e,
             then_statement: a,
-            else_statement: None,
+            else_statement: else_s,
         })
     }
+
+iflet_else_statement -> Box<Node<Statement>> =
+    K<"else"> _ s:statement { s }
 
 match_statement -> MatchStatement =
     "match" _ "(" _ e:expression _ ")" _ "{" _ cases:list0<box<node<match_block>>> _ "}" {
