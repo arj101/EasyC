@@ -29,7 +29,9 @@ struct Ident {
 		stmt
 	}
 
-
+	defer(stmts...) {
+		...
+	}
 )
 
 

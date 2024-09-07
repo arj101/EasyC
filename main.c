@@ -50,6 +50,9 @@ int main() {
   int a = 424;
   a *= 25;
 
+    defer () {
+        printf("Hello world");
+    };
 
 
   return 0;

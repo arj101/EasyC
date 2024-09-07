@@ -1088,16 +1088,26 @@ pub statement -> Box<Node<Statement>> = box<node<statement0>>
 statement0 -> Statement =
     s:node<labeled_statement> { Statement::Labeled(s) } /
     scoped<compound_statement> /
+    d:box<node<defer_statement>> { Statement::Defer(d)} /
     expression_statement /
     scoped<selection_statement> /
     scoped<iteration_statement> /
     jump_statement /
     gnu<asm_statement>
 
+
+defer_statement -> DeferStatement =
+    "defer" _ "(" _ deferred:list0<box<node<statement0>>> _ ")" _ block:box<node<statement0>> {
+        DeferStatement {
+            deferred: deferred,
+            stmt: block,
+
+        }
+    }
+
 ////
 // 6.8.1 Labeled statements
 ////
-
 labeled_statement -> LabeledStatement =
     l:node<label> _ ":" _ s:statement {
         LabeledStatement {

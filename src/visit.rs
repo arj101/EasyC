@@ -437,6 +437,10 @@ pub trait Visit<'ast> {
 
     }
 
+    fn visit_defer(&mut self, f: &'ast DeferStatement, span: &'ast Span) {
+
+    }
+
     fn visit_for_each(&mut self, f: &'ast ForEachStatement, span: &'ast Span) {
 
     }
@@ -1361,6 +1365,7 @@ pub fn visit_statement<'ast, V: Visit<'ast> + ?Sized>(
         }
         Statement::Asm(ref a) => visitor.visit_asm_statement(&a.node, &a.span),
         Statement::IfLet(ref if_let) => visitor.visit_if_let(&if_let.node, &if_let.span),
+        Statement::Defer(ref def) => visitor.visit_defer(&def.node, &def.span),
         Statement::ForEach(ref fe) => visitor.visit_for_each(&fe.node, &fe.span),
         _ => {},
     }

@@ -300,6 +300,21 @@ impl Visit<'_> for Visiter {
         self.enums.insert(ident, variants);
     }
 
+    fn visit_defer(&mut self, f: &'_ DeferStatement, span: &'_ Span) {
+        let mut replace = format!("{{\n");
+
+        replace += self.substr(f.stmt.span.start, f.stmt.span.end);
+        
+        replace += "\n//deferred statements\n";
+        for s in &f.deferred {
+            replace += self.substr(s.span.start, s.span.end);
+        }
+
+        replace += "\n}}";
+
+        self.str_replace(span.start, span.end, &replace);
+    }
+
     fn visit_for_each(&mut self, f: &'_ ForEachStatement, span: &'_ Span) {
         let t = &f.r.node.start.node;
         let t_str = "int";

@@ -1053,6 +1053,13 @@ pub struct ForEachStatement {
     pub s: Box<Node<Statement>>,
 }
 
+#[derive(Debug, PartialEq, Clone)]
+pub struct DeferStatement {
+    pub deferred: Vec<Box<Node<Statement>>>,
+    pub stmt: Box<Node<Statement>>,
+
+}
+
 // From 6.8 Statement
 
 /// Element of a function body
@@ -1065,6 +1072,7 @@ pub enum Statement {
     Expression(Option<Box<Node<Expression>>>),
     If(Node<IfStatement>),
     IfLet(Box<Node<IfLetStatement>>),
+    Defer(Box<Node<DeferStatement>>),
     ForEach(Box<Node<ForEachStatement>>),
     // MatchStmt(Box<Node<MatchStatement>>),
     Switch(Node<SwitchStatement>),
