@@ -1,0 +1,38 @@
+
+enum Ident {
+	A(t1),
+	B(t2)
+} -> 
+
+union Inner {
+	A: t1,
+	B: t2
+}
+
+struct Ident {
+	variant: int,
+	a: union Inner,
+}
+
+
+(
+	enum Ident a = Ident::A(e)
+
+	if let A(v1) = enum {
+		stmt
+	} ->
+
+	union Ident a = Ident::Inner(a)
+
+	if enum.variant == 0 {
+		t1 v1 = enum.A;
+		stmt
+	}
+
+
+)
+
+
+
+
+

@@ -1,0 +1,15 @@
+
+enum foo {
+	A(int),
+	B(char),
+	d2344(int)
+};
+
+int main(){
+	struct foo a = foo::A(435);
+	if let foo::A(x) = a {
+		printf("sffjsfnf");
+	}
+	return 0;
+}
+
