@@ -1,5 +1,5 @@
 # EasyC
-A superset of C for correct and concise code with high level features
+A superset of C for correct and concise code with high level features.<br/>
 Written on-top of https://github.com/vickenty/lang-c
 
 ## Features
