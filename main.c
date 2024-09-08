@@ -1,22 +1,32 @@
 
 
-struct OkVal {
-    char* source;
-};
-
-enum Result {
-    Ok(char* ),
-    Err(char* ),
-};
-
-
-
 int main() {
+    char op = '+';
 
-    struct Result m = Result::Ok("hello world");
+    int a = 4;
+    for i in 0 to 10 {
+        printf("%d\n", i);
+    }
 
-    m = Result::Err("hello world");
-
+    char* mem1 = (char*)malloc(128);
+    char* mem2 = (char*)malloc(256);
+    defer(free(mem1); free(mem2);) {
+        mem1[0] = op;
+        match (op) {
+            case '+' {
+                printf("Add\n");
+            }
+            case '-' {
+                printf("Sub\n");
+            }
+            case '*' {
+                printf("Mul\n");
+            }
+            case '/' {
+                printf("Div\n");
+            }
+        }
+    }
 
 
   return 0;

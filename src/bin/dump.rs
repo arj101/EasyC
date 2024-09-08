@@ -43,9 +43,6 @@ fn main() {
         }
     };
 
-    let mut preprocessor_directives = String::new();
-    
-    let mut write_path = format!(".{source}");
 
 
     match lang_c::driver::parse(&config, &source) {
@@ -55,7 +52,8 @@ fn main() {
                 {
                     let mut printer = lang_c::print::Printer::new(&mut buf);
                     printer.visit_translation_unit(&parse.unit);
-                    desugar::walk_ast(parse.unit, &source);
+                    let converted = desugar::walk_ast(parse.unit, &source);
+                    println!("{converted}");
                 }
             }
         }
