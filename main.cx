@@ -1,31 +1,33 @@
 
+
 int main() {
-  int b = 2;
-  int a = 2;
+    char op = '+';
 
-  b = expif a > 5 {
-        printf("a is greater than 5");
-        10
-  } else {
-        printf("a <= 5");
-        0
-    };
-
-    printf("%d", b);
-
+    int a = 4;
     for i in 0 to 10 {
-        printf("%d", i);
+        printf("%d\n", i);
     }
 
-    char* mem = (char*)malloc(2048);
-    char* mem2 = (char*)malloc(1024);
-
-    defer(free(mem); free(mem2);) {
-        for i in 0 to 30 {
-            mem[i] = 'a';
-            mem2[i] = 'b';
+    char* mem1 = (char*)malloc(128);
+    char* mem2 = (char*)malloc(256);
+    defer(free(mem1); free(mem2);) {
+        mem1[0] = op;
+        match (op) {
+            case '+' {
+                printf("Add\n");
+            }
+            case '-' {
+                printf("Sub\n");
+            }
+            case '*' {
+                printf("Mul\n");
+            }
+            case '/' {
+                printf("Div\n");
+            }
         }
     }
+
 
   return 0;
 }

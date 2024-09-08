@@ -1076,7 +1076,7 @@ pub struct MatchBlock {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MatchDefaultBlock {
-    pub stmt: Box<Node<Statement>>,
+    pub stmt: Vec<Box<Node<Statement>>>,
 }
 
 

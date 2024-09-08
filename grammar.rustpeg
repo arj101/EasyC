@@ -1191,7 +1191,7 @@ match_block -> MatchBlock =
             fall_through: true,
         }
     } /
-    K<"case"> _ e:constant_expression _ "=>" _ s:list0<statement> {
+    K<"case"> _ e:constant_expression _ ":" _ s:list0<statement> {
         MatchBlock {
            cexpr: e,
            stmts: s,
@@ -1201,7 +1201,7 @@ match_block -> MatchBlock =
     }
 
 default_block -> MatchDefaultBlock =
-    K<"default"> _ ":" _ s:statement {
+    K<"default"> _ ":" _ s:list0<statement>  {
         MatchDefaultBlock { stmt:s }
 
     }

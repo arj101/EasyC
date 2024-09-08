@@ -311,7 +311,7 @@ impl Visit<'_> for Visiter {
             replace += self.substr(s.span.start, s.span.end);
         }
 
-        replace += "\n}}";
+        replace += "}";
 
         self.str_replace(span.start, span.end, &replace);
     }
@@ -399,6 +399,7 @@ impl Visit<'_> for Visiter {
         } = binary_operator_expression
         {
             if let Expression::Identifier(ident) = &lhs.node {
+                self.visit_expression(&rhs.node, &rhs.span);
                 if let Expression::IfExpr(b) = &rhs.node {
                     if let IfExpr {
                         cond,
@@ -540,10 +541,11 @@ impl Visit<'_> for Visiter {
                 .expect("Invalid enum variant");
 
             let mut built = format!(
-                "{{
+                "(struct {}){{
             .variant = {},
             .value = {{ .{} = {} }}
             }}",
+               a.sum_type.node.name,
                 variant.1,
                 a.variant.node.name,
                 self.substr(a.inner_val.span.start, a.inner_val.span.end)
@@ -564,26 +566,7 @@ impl Visit<'_> for Visiter {
     }
 }
 
-pub fn walk_ast(node: TranslationUnit, s: &str) {
-    // for decl in node.0 {
-    //     match decl.node {
-    //         ExternalDeclaration::Declaration(node) => {
-    //         if let Declaration { specifiers, declarators } = node.node {
-    //
-    //             if specifiers.len() == 1 {
-    //                 if let DeclarationSpecifier::TypeSpecifier(Node{node: TypeSpecifier::Enum(e), span: _}) = &specifiers[0].node {
-    //                     for vals in e.node.enumerators {
-    //
-    //                         }
-    //                 }
-    //             }
-    //         }
-    //         }
-    //        _ => (),
-    //     }
-    //
-    // }
-    //
+pub fn walk_ast(node: TranslationUnit, s: &str) -> String {
     let source = std::fs::read_to_string(s).unwrap();
 
     let mut visiter = Visiter {
@@ -596,10 +579,5 @@ pub fn walk_ast(node: TranslationUnit, s: &str) {
 
     visit_translation_unit(&mut visiter, &node);
 
-    println!("{}", visiter.source.string);
+    visiter.source.string
 }
-
-// pub fn desugar_if_let(env: EnviIfLetStatement { variant, inner_val_binding, then_statement, else_statement }: IfLetStatement) -> Statement {
-//
-//
-//
